@@ -91,15 +91,6 @@ function initialize() {
 		type: 'pattern', patternUrl: "data/hiro.patt"
 	});
 
-	// Debug: Add a visible red cube
-	let debugCube = new THREE.Mesh(
-		new THREE.BoxGeometry(1, 1, 1),
-		new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
-	);
-	debugCube.position.set(0, 0, 0);
-	markerRoot.add(debugCube);
-	console.log("Debug cube added!");
-
 	// Load OBJ model with fixes
 	var objLoader = new THREE.OBJLoader();
 	objLoader.load('models/WallReader.obj', function (object) {
@@ -110,7 +101,7 @@ function initialize() {
 			if (child instanceof THREE.Mesh) {
 				child.material.side = THREE.DoubleSide; // Render both sides
 				child.visible = true;
-				child.material = new THREE.MeshStandardMaterial({ color: 0x00ff00, metalness: 0.5, roughness: 0.5 }); // Make it green for visibility
+				child.material = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.5, roughness: 0.5 }); // Make it green for visibility
 			}
 		});
 
