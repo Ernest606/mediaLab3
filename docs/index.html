@@ -29,11 +29,12 @@ animate();
 
 function initialize() {
 	scene = new THREE.Scene();
-	let ambientLight = new THREE.AmbientLight(0xffffff, 1.0); // Brighter lighting
+	let ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
 	scene.add(ambientLight);
 
 	camera = new THREE.Camera();
 	scene.add(camera);
+	camera.position.set(0, 0, 5); // Move camera closer
 
 	renderer = new THREE.WebGLRenderer({
 		antialias: true,
@@ -90,22 +91,33 @@ function initialize() {
 		type: 'pattern', patternUrl: "data/hiro.patt"
 	});
 
+	// Debug: Add a visible red cube
+	let debugCube = new THREE.Mesh(
+		new THREE.BoxGeometry(1, 1, 1),
+		new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+	);
+	debugCube.position.set(0, 0, 0);
+	markerRoot.add(debugCube);
+	console.log("Debug cube added!");
+
 	// Load OBJ model with fixes
 	var objLoader = new THREE.OBJLoader();
 	objLoader.load('models/WallReader.obj', function (object) {
 		model = object;
 		
-		// Apply debug wireframe material
+		// Apply fixes for visibility
 		model.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
-				child.material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true }); // Red wireframe
+				child.material.side = THREE.DoubleSide; // Render both sides
+				child.visible = true;
+				child.material = new THREE.MeshStandardMaterial({ color: 0x00ff00, metalness: 0.5, roughness: 0.5 }); // Make it green for visibility
 			}
 		});
 
 		// Adjust scale and position
-		model.scale.set(0.2, 0.2, 0.2);  // Smaller scale for visibility
-		model.position.set(0, 0, 0);  // Move forward to avoid being inside marker
-		model.rotation.set(0, 0, 0);  // Reset rotation
+		model.scale.set(0.2, 0.2, 0.2);
+		model.position.set(0, 0.5, 1);
+		model.rotation.set(-Math.PI / 2, 0, 0);
 
 		markerRoot.add(model);
 		console.log("Model object:", model);
@@ -121,11 +133,11 @@ function initialize() {
 }
 
 function update() {
+	console.log("Marker Root Children Count:", markerRoot.children.length); // Debug marker detection
 	if (arToolkitSource.ready !== false) {
 		arToolkitContext.update(arToolkitSource.domElement);
 	}
 
-	// Prevent errors if model is null
 	if (model) {
 		model.rotation.y += 0.02;
 	}
