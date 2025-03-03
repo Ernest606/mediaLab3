@@ -32,14 +32,6 @@ function initialize() {
 	let ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
 	scene.add(ambientLight);
 
-	// Add an environment map for reflections
-	const envLoader = new THREE.CubeTextureLoader();
-	scene.background = envLoader.load([
-		'assets/px.jpg', 'assets/nx.jpg',
-		'assets/py.jpg', 'assets/ny.jpg',
-		'assets/pz.jpg', 'assets/nz.jpg'
-	]);
-
 	camera = new THREE.Camera();
 	scene.add(camera);
 	camera.position.set(0, 0, 5); // Move camera closer
@@ -99,21 +91,17 @@ function initialize() {
 		type: 'pattern', patternUrl: "data/hiro.patt"
 	});
 
-	// Load OBJ model with reflections
+	// Load OBJ model with fixes
 	var objLoader = new THREE.OBJLoader();
 	objLoader.load('models/WallReader.obj', function (object) {
 		model = object;
 		
-		// Apply reflective material
+		// Apply fixes for visibility
 		model.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
-				child.material = new THREE.MeshStandardMaterial({
-					color: 0xffffff,
-					metalness: 1.0,
-					roughness: 0.1,
-					envMap: scene.background
-				});
+				child.material.side = THREE.DoubleSide; // Render both sides
 				child.visible = true;
+				child.material = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.5, roughness: 0.5 }); // Make it green for visibility
 			}
 		});
 
